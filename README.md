@@ -10,6 +10,7 @@ The config object reads from a file in this format
 ex:
 
 [uat]
+
 mounted_dir=/path/to/dir
 
 repo=https://pathtorepo
