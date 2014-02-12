@@ -1,0 +1,55 @@
+#!/usr/bin/ruby
+
+require 'optparse'
+require 'ostruct'
+require 'rubygems'
+require 'svnexport'
+class ParseArgs
+    def self.parse(args)
+        options = OpenStruct.new
+        options.regex = []
+        options.facts = []
+        options.commands = []
+        opt_parser = OptionParser.new do |opt|
+          opt.banner = "Usage: #{File.basename($0)} OPTIONS"
+          opt.separator ""
+          opt.separator "OPTIONS"
+          opt.on("-t", "--tier tier", "server tier of export ex: stage/prod/uat") do |u|
+            options.tier = u
+          end
+	  opt.on("-r", "--revision revision", "revision of the svn export") do |x|
+	    options.rev = x
+	  end
+	  opt.on("-j", "--jira ticket", "ticket number associated with export") do |x|
+	    options.jira = x
+	  end
+          opt.on("-h", "--help", "help") do
+            puts opt_parser
+            exit
+          end
+	end
+       opt_parser.parse!(args)
+       options
+    end # end parse()
+end # close class
+
+
+
+if ARGV.empty?
+  puts "please run --help to learn how to use the script"
+  exit
+else
+  options = ParseArgs.parse(ARGV)
+end
+
+### MAIN ####
+
+# create the config object
+a = Svnexport::Config.new
+# load the config into a variable to pass to new object
+confighash = a.loadconfig('/etc/svnexport/export.conf')
+# call actions passing the config
+actions = Svnexport::Actions.new(confighash, options.rev, options.tier, options.jira)
+actions.archive_old_dirs
+actions.rotate
+actions.checkout
