@@ -11,7 +11,9 @@ ex:
 
 [uat]
 mounted_dir=/path/to/dir
+
 repo=https://pathtorepo
+
 retain=3 # the amount of directories you want to retain
 
 
